@@ -7,4 +7,22 @@ var NetworkTopology: mesh, ring, adj_matrix, adj_list where the partition of whi
 
 3. DC's individual struct computeThatCanBeExecutedUser, totalVolumeThatCanBeStored User by mentioning it in either way by providing "-all<struct>", or "--pair <struct>", where we read the data from the user file provided: DC_info.protobufp, json, apache-thrift,xml-rpc, php, which will be provided by the client support given in clients/ directory. 
 
-4. 
+4.	  From server_config.json<server-id = 1(for master in case of centralised)>: 
+		queueLength; //Scheduler Characteristics
+		policyOfScheduler given by functionName=policyFileName (in case of centralised, have a separate flag which contains our communication protocol.)
+		Centralised(should be same for all servers (pjm only) -> Record and send the tasks using estimation module!!) otherwise,
+		Decentralised-type(scheduler is "same" for (1,2) or "functionName=policyFileName" for 2.  
+			1. client request job subtask received, 
+			2. allocated by other pjms of other DC's)
+		
+
+	
+
+*/
+
+string server_address;
+string server_ip;
+string server_port;
+
+string policyOfScheduler;
+
