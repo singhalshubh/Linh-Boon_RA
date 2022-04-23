@@ -1,0 +1,17 @@
+{
+	"1": 
+	{
+		"compute": 2,
+		"input": 2,
+		"datacenter":2,
+		"command": "python3 PS1-P4.py"
+	},
+	"2": 
+	{
+		"compute": 3,
+		"input": 1,
+		"datacenter": 1,
+		"command": "python3 PS1-P6.py"
+	}
+
+}
