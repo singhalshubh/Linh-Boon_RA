@@ -96,7 +96,7 @@ void AddDescriptorsImpl() {
       "\n\014kvcomm.proto\022\002kv\"n\n\007command\022\021\n\tcomm_ty"
       "pe\030\001 \002(\t\022\023\n\013sender_type\030\002 \001(\t\022\026\n\016sender_"
       "address\030\003 \001(\t\022\016\n\006job_id\030\004 \002(\005\022\023\n\013data_ce"
-      "nter\030\005 \002(\005"
+      "nter\030\005 \001(\005"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
       descriptor, 130);
@@ -292,7 +292,7 @@ bool command::MergePartialFromCodedStream(
         break;
       }
 
-      // required int32 data_center = 5;
+      // optional int32 data_center = 5;
       case 5: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(40u /* 40 & 0xFF */)) {
@@ -368,7 +368,7 @@ void command::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->job_id(), output);
   }
 
-  // required int32 data_center = 5;
+  // optional int32 data_center = 5;
   if (cached_has_bits & 0x00000010u) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(5, this->data_center(), output);
   }
@@ -426,7 +426,7 @@ void command::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->job_id(), target);
   }
 
-  // required int32 data_center = 5;
+  // optional int32 data_center = 5;
   if (cached_has_bits & 0x00000010u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(5, this->data_center(), target);
   }
@@ -457,13 +457,6 @@ size_t command::RequiredFieldsByteSizeFallback() const {
         this->job_id());
   }
 
-  if (has_data_center()) {
-    // required int32 data_center = 5;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->data_center());
-  }
-
   return total_size;
 }
 size_t command::ByteSizeLong() const {
@@ -475,7 +468,7 @@ size_t command::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         _internal_metadata_.unknown_fields());
   }
-  if (((_has_bits_[0] & 0x00000019) ^ 0x00000019) == 0) {  // All required fields are present.
+  if (((_has_bits_[0] & 0x00000009) ^ 0x00000009) == 0) {  // All required fields are present.
     // required string comm_type = 1;
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -485,11 +478,6 @@ size_t command::ByteSizeLong() const {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::Int32Size(
         this->job_id());
-
-    // required int32 data_center = 5;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->data_center());
 
   } else {
     total_size += RequiredFieldsByteSizeFallback();
@@ -510,6 +498,13 @@ size_t command::ByteSizeLong() const {
     }
 
   }
+  // optional int32 data_center = 5;
+  if (has_data_center()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->data_center());
+  }
+
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
@@ -576,7 +571,7 @@ void command::CopyFrom(const command& from) {
 }
 
 bool command::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000019) != 0x00000019) return false;
+  if ((_has_bits_[0] & 0x00000009) != 0x00000009) return false;
   return true;
 }
 

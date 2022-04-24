@@ -35,6 +35,45 @@ var NetworkTopology: mesh, ring, adj_matrix, adj_list where the partition of whi
 
 #define NUMBER_OF_CONNECTIONS_ALLOWED 1000
 
+
+/*Scheduler code is here. Shift it to scheduler after completion*/
+
+struct task {
+
+	vector<vector<string>> command;
+	int datacenter;
+	int compute;
+	int input_vol;
+
+};
+
+struct job {
+
+	int connection_fd; //For communicating with the client
+	kv::command job_desc;
+	vector<struct task*> tasks;
+};
+
+vector<struct job*> job_queue;
+
+pthread_mutex_t isSchedulerJobRun;
+bool flag_scheduler_run_job = false;
+
+
+void indicateSchedulerJobToRun() {
+	flag_scheduler_run_job = true;
+	
+	// round robin scheduler!
+
+	// Indicate the scheduler to start the procedure of scheduling in job_queue
+}
+
+
+
+
+
+/*--------------------------------------------------------------*/
+
 int server_port;
 string server_ip;
 string server_address;
@@ -44,6 +83,39 @@ struct thread_info {
 	int connection_fd;
 	string type = "";
 };
+
+void readFromJobsJson(string jobs_fileName, struct job *nn, int index) {
+
+	// Check if the fileName is json type or not.
+	ifstream j(jobs_fileName, ifstream::binary);
+	Json::Value job_file_info;
+	j >> job_file_info;
+
+	string job_index = to_string(index);
+
+	// Iterate for the tasks inside the job
+	string tracker = "1";
+
+	while(stoi(tracker) <= job_file_info[job_index].size()) {
+
+		struct task *tt = new task;
+
+		vector<string>commands;
+		for(int i = 0; i < job_file_info[job_index][tracker]["command"].size(); i++) {
+			commands.push_back(job_file_info[job_index][tracker]["command"][i].asString());
+		}
+
+		tt->command.push_back(commands);
+		tt->datacenter = job_file_info[job_index][tracker]["datacenter"].asInt();
+		tt->compute = job_file_info[job_index][tracker]["compute"].asInt();
+		tt->input_vol = job_file_info[job_index][tracker]["input"].asInt();
+
+		nn->tasks.push_back(tt);
+
+		tracker = to_string(stoi(tracker)+1);
+	}
+
+}
 
 
 void doRead(int fd, char *buffer, size_t bytes_to_read) {
@@ -92,16 +164,19 @@ void processCommand(struct thread_info* node, kv::command &command) {
 		// which data center does the job belong to?
 		// extract the server number anbd port which the data center is corresponding to?
 		int datacenterIndex = command.data_center()-1;
+		fprintf(stderr, "%d\n", datacenterIndex );
 		string server_port = to_string(serverInfo[datacenterIndex] -> port);
 		string server_ip = serverInfo[datacenterIndex] -> address;
 
 		command.set_sender_address(server_ip + ":" + server_port);
 		command.set_sender_type("server"); 
 		command.set_comm_type("Server:Job");
+
+		fprintf(stderr, "[Sending the request at]%s\n",command.sender_address().c_str());
 		// send this to ther server!
 		int sock_fd = socket(PF_INET, SOCK_STREAM, 0);
 	    struct sockaddr_in servaddr = getSockAddr(command.sender_address());
-	    if (connect(sock_fd, (struct sockaddr *) &servaddr, sizeof(servaddr)) == -1) {
+	    if (connect(sock_fd, (struct sockaddr *) &servaddr, sizeof(servaddr)) != -1) {
 			fprintf(stderr, "[Writing to the server]\n");
 			writeCommand(sock_fd, command);
 		}
@@ -115,9 +190,29 @@ void processCommand(struct thread_info* node, kv::command &command) {
 
 	else if(command.comm_type().compare("Server:Job") == 0) {
 
+		struct job *nn = new job;
+		nn->connection_fd = node -> connection_fd;
+		nn->job_desc = command;
+		// Unthread the jobs as series of tasks
+		readFromJobsJson("jobs.json", nn, command.job_id());
+		job_queue.push_back(nn);
+
+		// for(auto x : nn->tasks) {
+		// 	for(auto y: x->command[0]) {
+		// 		fprintf(stderr, "%s\n", y.c_str());
+		// 	}
+		// }
+
+		pthread_mutex_lock(&isSchedulerJobRun);
+
+		if(flag_scheduler_run_job == false) {
+			indicateSchedulerJobToRun();
+		}
+
+		pthread_mutex_unlock(&isSchedulerJobRun);
+
 		// Execute the job like DAG and record the times at individual DC using logs
 		// Return the request to the server who send it.
-		
 
 	}
 	else {

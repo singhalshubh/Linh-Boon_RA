@@ -205,7 +205,7 @@ class command : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::google::protobuf::int32 job_id() const;
   void set_job_id(::google::protobuf::int32 value);
 
-  // required int32 data_center = 5;
+  // optional int32 data_center = 5;
   bool has_data_center() const;
   void clear_data_center();
   static const int kDataCenterFieldNumber = 5;
@@ -471,7 +471,7 @@ inline void command::set_job_id(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:kv.command.job_id)
 }
 
-// required int32 data_center = 5;
+// optional int32 data_center = 5;
 inline bool command::has_data_center() const {
   return (_has_bits_[0] & 0x00000010u) != 0;
 }
