@@ -1,13 +1,16 @@
 {
 
 	"1":
-	{
+	{		"time": 
+			{
+					"seconds":12
+			},
 			"1": 
 			{
 				"compute": 2,
 				"input": 2,
-				"datacenter":2,
-				"command": ["python3 PS1-P4.py", "python3 PS1-P4.py"]
+				"datacenter":1,
+				"command": ["python3 PS1-P4.py"]
 			},
 			"2": 
 			{

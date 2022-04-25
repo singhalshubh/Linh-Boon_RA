@@ -35,6 +35,26 @@ var NetworkTopology: mesh, ring, adj_matrix, adj_list where the partition of whi
 
 #define NUMBER_OF_CONNECTIONS_ALLOWED 1000
 
+struct r {
+
+	int ans;
+	string sender;
+	int time;
+};
+
+unordered_map<string, struct r*> job_map;
+unordered_map<string, struct r*> task_map;
+
+int server_port;
+string server_ip;
+string server_address;
+
+struct thread_info {
+	pthread_t threadID;
+	int connection_fd;
+	string type = "";
+};
+
 
 /*Scheduler code is here. Shift it to scheduler after completion*/
 
@@ -51,72 +71,28 @@ struct job {
 
 	int connection_fd; //For communicating with the client
 	kv::command job_desc;
+	int estimatedTime;
 	vector<struct task*> tasks;
 };
 
 vector<struct job*> job_queue;
 
 pthread_mutex_t isSchedulerJobRun;
+pthread_mutex_t jobQueue;
 bool flag_scheduler_run_job = false;
 
 
-void indicateSchedulerJobToRun() {
-	flag_scheduler_run_job = true;
-	
-	// round robin scheduler!
-
-	// Indicate the scheduler to start the procedure of scheduling in job_queue
+sockaddr_in getSockAddr(const std::string &ip_port) {
+    size_t position = ip_port.find(':');
+    std::string ip = ip_port.substr(0, position);
+    int port = std::stoi(ip_port.substr(position + 1, std::string::npos));
+    struct sockaddr_in addr{};
+    bzero(&addr, sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(port);
+    inet_pton(AF_INET, ip.c_str(), &(addr.sin_addr));
+    return addr;
 }
-
-
-
-
-
-/*--------------------------------------------------------------*/
-
-int server_port;
-string server_ip;
-string server_address;
-
-struct thread_info {
-	pthread_t threadID;
-	int connection_fd;
-	string type = "";
-};
-
-void readFromJobsJson(string jobs_fileName, struct job *nn, int index) {
-
-	// Check if the fileName is json type or not.
-	ifstream j(jobs_fileName, ifstream::binary);
-	Json::Value job_file_info;
-	j >> job_file_info;
-
-	string job_index = to_string(index);
-
-	// Iterate for the tasks inside the job
-	string tracker = "1";
-
-	while(stoi(tracker) <= job_file_info[job_index].size()) {
-
-		struct task *tt = new task;
-
-		vector<string>commands;
-		for(int i = 0; i < job_file_info[job_index][tracker]["command"].size(); i++) {
-			commands.push_back(job_file_info[job_index][tracker]["command"][i].asString());
-		}
-
-		tt->command.push_back(commands);
-		tt->datacenter = job_file_info[job_index][tracker]["datacenter"].asInt();
-		tt->compute = job_file_info[job_index][tracker]["compute"].asInt();
-		tt->input_vol = job_file_info[job_index][tracker]["input"].asInt();
-
-		nn->tasks.push_back(tt);
-
-		tracker = to_string(stoi(tracker)+1);
-	}
-
-}
-
 
 void doRead(int fd, char *buffer, size_t bytes_to_read) {
     size_t bytes_read;
@@ -131,18 +107,6 @@ void doRead(int fd, char *buffer, size_t bytes_to_read) {
     }
 }
 
-sockaddr_in getSockAddr(const std::string &ip_port) {
-    size_t position = ip_port.find(':');
-    std::string ip = ip_port.substr(0, position);
-    int port = std::stoi(ip_port.substr(position + 1, std::string::npos));
-    struct sockaddr_in addr{};
-    bzero(&addr, sizeof(addr));
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
-    inet_pton(AF_INET, ip.c_str(), &(addr.sin_addr));
-    return addr;
-}
-
 void writeCommand(int sock_fd, kv::command &command){
     size_t comm_len = command.ByteSizeLong();
     write(sock_fd, &comm_len, sizeof(comm_len));
@@ -151,6 +115,122 @@ void writeCommand(int sock_fd, kv::command &command){
     write(sock_fd, serialization, command.ByteSizeLong());
 
 }
+
+
+int jobRun(string command, int timeout) {
+
+	int childpid = fork();
+	if(childpid = 0) {
+
+
+
+	}
+	else {
+
+
+	}
+
+}
+
+int schedulerRun(string type) {
+
+	if(type.compare("stf") == 0) {
+
+		pthread_mutex_lock(&jobQueue);
+
+		int min_exec_time = job_queue[0]->estimatedTime;
+		int pos = 0;
+		// Perform the iteration!
+		for(int i = 0; i < job_queue.size(); i++) {
+
+			if(min_exec_time > job_queue[i]->estimatedTime) {
+				pos = i;
+				min_exec_time = job_queue[i]->estimatedTime;
+			}
+		}
+		// fprintf(stderr, "%d\n", min_exec_time);
+		pthread_mutex_unlock(&jobQueue);
+		// Execute the job by undangling the task stored in vector<tasks>
+		
+		for(int i = 0; i < job_queue[pos] -> tasks.size(); i++) {
+
+			struct r* mapping = new r;
+			mapping->sender = server_address;
+			task_map.insert(make_pair(job_queue[pos] -> job_desc.unique_job_id() + to_string(i), mapping));
+
+			kv::command task;
+			task.set_comm_type("Task-Reply");
+			task.set_sender_address(server_address);
+			// Only one task per task, not consideriung parallel tasks
+			task.set_task_info(job_queue[pos]->tasks[i]->command[0][0]);
+
+			string to_send = serverInfo[job_queue[pos]->tasks[i]->datacenter - 1] -> address;
+			int sock_fd = socket(PF_INET, SOCK_STREAM, 0);
+		    struct sockaddr_in servaddr = getSockAddr(to_send);
+		    if (connect(sock_fd, (struct sockaddr *) &servaddr, sizeof(servaddr)) != -1) {
+				fprintf(stderr, "[Writing to the server]\n");
+				writeCommand(sock_fd, task);
+			}
+
+
+		}
+
+
+	}
+
+}
+
+void indicateSchedulerJobToRun() {
+	flag_scheduler_run_job = true;
+	schedulerRun("stf");
+	
+	// round robin scheduler!
+
+	// Indicate the scheduler to start the procedure of scheduling in job_queue
+}
+
+
+
+
+
+/*--------------------------------------------------------------*/
+
+void readFromJobsJson(string jobs_fileName, struct job *nn, int index) {
+
+	// Check if the fileName is json type or not.
+	ifstream j(jobs_fileName, ifstream::binary);
+	Json::Value job_file_info;
+	j >> job_file_info;
+	
+	string job_index = to_string(index);
+	nn->estimatedTime = job_file_info[job_index]["time"]["seconds"].asInt();
+
+	// Iterate for the tasks inside the job
+	string tracker = "1";
+	// time is parameter so tracker < size! adjust accprdingly
+	while(stoi(tracker) < job_file_info[job_index].size()) {
+
+		struct task *tt = new task;
+		// fprintf(stderr, "Reading%d\n", job_file_info[job_index].size());
+
+		vector<string>commands;
+		for(int i = 0; i < job_file_info[job_index][tracker]["command"].size(); i++) {
+			commands.push_back(job_file_info[job_index][tracker]["command"][i].asString());
+		}
+
+		tt->command.push_back(commands);
+		tt->datacenter = job_file_info[job_index][tracker]["datacenter"].asInt();
+		tt->compute = job_file_info[job_index][tracker]["compute"].asInt();
+		tt->input_vol = job_file_info[job_index][tracker]["input"].asInt();
+
+		nn->tasks.push_back(tt);
+		// fprintf(stderr, "%s\n", tracker.c_str());
+		tracker = to_string(stoi(tracker)+1);
+		// fprintf(stderr, "%s\n", tracker.c_str());
+	}
+
+}
+
 
 // Requires server-number, file name as argument
 
@@ -164,13 +244,19 @@ void processCommand(struct thread_info* node, kv::command &command) {
 		// which data center does the job belong to?
 		// extract the server number anbd port which the data center is corresponding to?
 		int datacenterIndex = command.data_center()-1;
-		fprintf(stderr, "%d\n", datacenterIndex );
+		fprintf(stderr, "[Client-Job is for: ]%s\n", serverInfo[datacenterIndex]->address.c_str());
 		string server_port = to_string(serverInfo[datacenterIndex] -> port);
-		string server_ip = serverInfo[datacenterIndex] -> address;
+		string server_ip = serverInfo[datacenterIndex] -> ip;
+
+		time_t sec = time(NULL);
+		struct r* mapping = new r;
+		mapping->sender = command.sender_address();
+		job_map.insert(make_pair(to_string(sec+command.job_id()), mapping));
 
 		command.set_sender_address(server_ip + ":" + server_port);
 		command.set_sender_type("server"); 
 		command.set_comm_type("Server:Job");
+		command.set_unique_job_id(to_string(sec+command.job_id()));
 
 		fprintf(stderr, "[Sending the request at]%s\n",command.sender_address().c_str());
 		// send this to ther server!
@@ -180,9 +266,6 @@ void processCommand(struct thread_info* node, kv::command &command) {
 			fprintf(stderr, "[Writing to the server]\n");
 			writeCommand(sock_fd, command);
 		}
-		else {
-			return;
-		}
 		
 		close(sock_fd);
 
@@ -191,12 +274,22 @@ void processCommand(struct thread_info* node, kv::command &command) {
 	else if(command.comm_type().compare("Server:Job") == 0) {
 
 		struct job *nn = new job;
-		nn->connection_fd = node -> connection_fd;
-		nn->job_desc = command;
+		nn->job_desc.CopyFrom(command);
 		// Unthread the jobs as series of tasks
 		readFromJobsJson("jobs.json", nn, command.job_id());
-		job_queue.push_back(nn);
+		
+		if(job_map.find(command.unique_job_id()) != job_map.end()) {
+			fprintf(stderr, "[Same datacenter was the job alocated for]\n");
+		}
+		else {
+			struct r* mapping = new r;
+			mapping->sender = command.sender_address();
+			job_map.insert(make_pair(command.unique_job_id(), mapping));
+		}
 
+		pthread_mutex_lock(&jobQueue);
+		job_queue.push_back(nn);
+		pthread_mutex_unlock(&jobQueue);
 		// for(auto x : nn->tasks) {
 		// 	for(auto y: x->command[0]) {
 		// 		fprintf(stderr, "%s\n", y.c_str());
@@ -217,6 +310,7 @@ void processCommand(struct thread_info* node, kv::command &command) {
 	}
 	else {
 		// SM execution which is just executing the next thing in task queue.
+		fprintf(stderr, "%s\n",command.comm_type().c_str());
 	}
 
 }
@@ -236,8 +330,8 @@ void *processRequest(void *nn) {
         doRead(node -> connection_fd, buffer, bytes_to_read);
         kv::command command;
 		command.ParseFromArray(buffer, (int) bytes_to_read);
-		
-		fprintf(stderr, "[Request received]%s\n", command.comm_type().c_str());
+		time_t sec = time(NULL);
+		fprintf(stderr, "[Request received][%ld]%s\n", sec, command.comm_type().c_str());
 		
 		processCommand(node, command);
     }
@@ -253,9 +347,9 @@ int main(int argc, char *argv[]) {
 	generate_server_info();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
 	
 	server_port = serverInfo[server_number] -> port;
-	server_ip = serverInfo[server_number] -> address;
+	server_ip = serverInfo[server_number] -> ip;
 
-	fprintf(stderr, "Server is running at: %s:%d\n",serverInfo[server_number]->address.c_str(), serverInfo[server_number]->port);
+	fprintf(stderr, "Server is running at: %s:%d\n",serverInfo[server_number]->ip.c_str(), serverInfo[server_number]->port);
 
 	// Accept the connections from the client
 

@@ -8,6 +8,7 @@ struct servers {
 
 	int serverId;
 	int port;
+	string ip = "";
 	string address = "";
 	int computeSlots;
 	int inputVol;
@@ -44,7 +45,8 @@ void readFromServerJson(string server_config_fileName) {
 		ss->computeSlots = server[tracker]["compute"].asInt();
 		ss->inputVol = server[tracker]["input"].asInt();
 		ss->port = server[tracker]["port"].asInt();
-		ss -> address = server[tracker]["address"].asString();
+		ss -> ip = server[tracker]["address"].asString();
+		ss->address = ss->ip +":" + to_string(ss->port);
 
 		serverInfo.push_back(ss);
 

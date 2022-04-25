@@ -198,17 +198,62 @@ class command : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::std::string* release_sender_address();
   void set_allocated_sender_address(::std::string* sender_address);
 
-  // required int32 job_id = 4;
+  // optional string unique_job_id = 5;
+  bool has_unique_job_id() const;
+  void clear_unique_job_id();
+  static const int kUniqueJobIdFieldNumber = 5;
+  const ::std::string& unique_job_id() const;
+  void set_unique_job_id(const ::std::string& value);
+  #if LANG_CXX11
+  void set_unique_job_id(::std::string&& value);
+  #endif
+  void set_unique_job_id(const char* value);
+  void set_unique_job_id(const char* value, size_t size);
+  ::std::string* mutable_unique_job_id();
+  ::std::string* release_unique_job_id();
+  void set_allocated_unique_job_id(::std::string* unique_job_id);
+
+  // optional string unique_task_id = 7;
+  bool has_unique_task_id() const;
+  void clear_unique_task_id();
+  static const int kUniqueTaskIdFieldNumber = 7;
+  const ::std::string& unique_task_id() const;
+  void set_unique_task_id(const ::std::string& value);
+  #if LANG_CXX11
+  void set_unique_task_id(::std::string&& value);
+  #endif
+  void set_unique_task_id(const char* value);
+  void set_unique_task_id(const char* value, size_t size);
+  ::std::string* mutable_unique_task_id();
+  ::std::string* release_unique_task_id();
+  void set_allocated_unique_task_id(::std::string* unique_task_id);
+
+  // optional string task_info = 8;
+  bool has_task_info() const;
+  void clear_task_info();
+  static const int kTaskInfoFieldNumber = 8;
+  const ::std::string& task_info() const;
+  void set_task_info(const ::std::string& value);
+  #if LANG_CXX11
+  void set_task_info(::std::string&& value);
+  #endif
+  void set_task_info(const char* value);
+  void set_task_info(const char* value, size_t size);
+  ::std::string* mutable_task_info();
+  ::std::string* release_task_info();
+  void set_allocated_task_info(::std::string* task_info);
+
+  // optional int32 job_id = 4;
   bool has_job_id() const;
   void clear_job_id();
   static const int kJobIdFieldNumber = 4;
   ::google::protobuf::int32 job_id() const;
   void set_job_id(::google::protobuf::int32 value);
 
-  // optional int32 data_center = 5;
+  // optional int32 data_center = 6;
   bool has_data_center() const;
   void clear_data_center();
-  static const int kDataCenterFieldNumber = 5;
+  static const int kDataCenterFieldNumber = 6;
   ::google::protobuf::int32 data_center() const;
   void set_data_center(::google::protobuf::int32 value);
 
@@ -222,11 +267,14 @@ class command : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   void clear_has_sender_address();
   void set_has_job_id();
   void clear_has_job_id();
+  void set_has_unique_job_id();
+  void clear_has_unique_job_id();
   void set_has_data_center();
   void clear_has_data_center();
-
-  // helper for ByteSizeLong()
-  size_t RequiredFieldsByteSizeFallback() const;
+  void set_has_unique_task_id();
+  void clear_has_unique_task_id();
+  void set_has_task_info();
+  void clear_has_task_info();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
@@ -234,6 +282,9 @@ class command : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::google::protobuf::internal::ArenaStringPtr comm_type_;
   ::google::protobuf::internal::ArenaStringPtr sender_type_;
   ::google::protobuf::internal::ArenaStringPtr sender_address_;
+  ::google::protobuf::internal::ArenaStringPtr unique_job_id_;
+  ::google::protobuf::internal::ArenaStringPtr unique_task_id_;
+  ::google::protobuf::internal::ArenaStringPtr task_info_;
   ::google::protobuf::int32 job_id_;
   ::google::protobuf::int32 data_center_;
   friend struct ::protobuf_kvcomm_2eproto::TableStruct;
@@ -447,15 +498,15 @@ inline void command::set_allocated_sender_address(::std::string* sender_address)
   // @@protoc_insertion_point(field_set_allocated:kv.command.sender_address)
 }
 
-// required int32 job_id = 4;
+// optional int32 job_id = 4;
 inline bool command::has_job_id() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
+  return (_has_bits_[0] & 0x00000040u) != 0;
 }
 inline void command::set_has_job_id() {
-  _has_bits_[0] |= 0x00000008u;
+  _has_bits_[0] |= 0x00000040u;
 }
 inline void command::clear_has_job_id() {
-  _has_bits_[0] &= ~0x00000008u;
+  _has_bits_[0] &= ~0x00000040u;
 }
 inline void command::clear_job_id() {
   job_id_ = 0;
@@ -471,15 +522,81 @@ inline void command::set_job_id(::google::protobuf::int32 value) {
   // @@protoc_insertion_point(field_set:kv.command.job_id)
 }
 
-// optional int32 data_center = 5;
+// optional string unique_job_id = 5;
+inline bool command::has_unique_job_id() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void command::set_has_unique_job_id() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void command::clear_has_unique_job_id() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void command::clear_unique_job_id() {
+  unique_job_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_unique_job_id();
+}
+inline const ::std::string& command::unique_job_id() const {
+  // @@protoc_insertion_point(field_get:kv.command.unique_job_id)
+  return unique_job_id_.GetNoArena();
+}
+inline void command::set_unique_job_id(const ::std::string& value) {
+  set_has_unique_job_id();
+  unique_job_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:kv.command.unique_job_id)
+}
+#if LANG_CXX11
+inline void command::set_unique_job_id(::std::string&& value) {
+  set_has_unique_job_id();
+  unique_job_id_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:kv.command.unique_job_id)
+}
+#endif
+inline void command::set_unique_job_id(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  set_has_unique_job_id();
+  unique_job_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:kv.command.unique_job_id)
+}
+inline void command::set_unique_job_id(const char* value, size_t size) {
+  set_has_unique_job_id();
+  unique_job_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:kv.command.unique_job_id)
+}
+inline ::std::string* command::mutable_unique_job_id() {
+  set_has_unique_job_id();
+  // @@protoc_insertion_point(field_mutable:kv.command.unique_job_id)
+  return unique_job_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* command::release_unique_job_id() {
+  // @@protoc_insertion_point(field_release:kv.command.unique_job_id)
+  if (!has_unique_job_id()) {
+    return NULL;
+  }
+  clear_has_unique_job_id();
+  return unique_job_id_.ReleaseNonDefaultNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void command::set_allocated_unique_job_id(::std::string* unique_job_id) {
+  if (unique_job_id != NULL) {
+    set_has_unique_job_id();
+  } else {
+    clear_has_unique_job_id();
+  }
+  unique_job_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), unique_job_id);
+  // @@protoc_insertion_point(field_set_allocated:kv.command.unique_job_id)
+}
+
+// optional int32 data_center = 6;
 inline bool command::has_data_center() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
+  return (_has_bits_[0] & 0x00000080u) != 0;
 }
 inline void command::set_has_data_center() {
-  _has_bits_[0] |= 0x00000010u;
+  _has_bits_[0] |= 0x00000080u;
 }
 inline void command::clear_has_data_center() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000080u;
 }
 inline void command::clear_data_center() {
   data_center_ = 0;
@@ -493,6 +610,138 @@ inline void command::set_data_center(::google::protobuf::int32 value) {
   set_has_data_center();
   data_center_ = value;
   // @@protoc_insertion_point(field_set:kv.command.data_center)
+}
+
+// optional string unique_task_id = 7;
+inline bool command::has_unique_task_id() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void command::set_has_unique_task_id() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void command::clear_has_unique_task_id() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void command::clear_unique_task_id() {
+  unique_task_id_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_unique_task_id();
+}
+inline const ::std::string& command::unique_task_id() const {
+  // @@protoc_insertion_point(field_get:kv.command.unique_task_id)
+  return unique_task_id_.GetNoArena();
+}
+inline void command::set_unique_task_id(const ::std::string& value) {
+  set_has_unique_task_id();
+  unique_task_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:kv.command.unique_task_id)
+}
+#if LANG_CXX11
+inline void command::set_unique_task_id(::std::string&& value) {
+  set_has_unique_task_id();
+  unique_task_id_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:kv.command.unique_task_id)
+}
+#endif
+inline void command::set_unique_task_id(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  set_has_unique_task_id();
+  unique_task_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:kv.command.unique_task_id)
+}
+inline void command::set_unique_task_id(const char* value, size_t size) {
+  set_has_unique_task_id();
+  unique_task_id_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:kv.command.unique_task_id)
+}
+inline ::std::string* command::mutable_unique_task_id() {
+  set_has_unique_task_id();
+  // @@protoc_insertion_point(field_mutable:kv.command.unique_task_id)
+  return unique_task_id_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* command::release_unique_task_id() {
+  // @@protoc_insertion_point(field_release:kv.command.unique_task_id)
+  if (!has_unique_task_id()) {
+    return NULL;
+  }
+  clear_has_unique_task_id();
+  return unique_task_id_.ReleaseNonDefaultNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void command::set_allocated_unique_task_id(::std::string* unique_task_id) {
+  if (unique_task_id != NULL) {
+    set_has_unique_task_id();
+  } else {
+    clear_has_unique_task_id();
+  }
+  unique_task_id_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), unique_task_id);
+  // @@protoc_insertion_point(field_set_allocated:kv.command.unique_task_id)
+}
+
+// optional string task_info = 8;
+inline bool command::has_task_info() const {
+  return (_has_bits_[0] & 0x00000020u) != 0;
+}
+inline void command::set_has_task_info() {
+  _has_bits_[0] |= 0x00000020u;
+}
+inline void command::clear_has_task_info() {
+  _has_bits_[0] &= ~0x00000020u;
+}
+inline void command::clear_task_info() {
+  task_info_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  clear_has_task_info();
+}
+inline const ::std::string& command::task_info() const {
+  // @@protoc_insertion_point(field_get:kv.command.task_info)
+  return task_info_.GetNoArena();
+}
+inline void command::set_task_info(const ::std::string& value) {
+  set_has_task_info();
+  task_info_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:kv.command.task_info)
+}
+#if LANG_CXX11
+inline void command::set_task_info(::std::string&& value) {
+  set_has_task_info();
+  task_info_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:kv.command.task_info)
+}
+#endif
+inline void command::set_task_info(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  set_has_task_info();
+  task_info_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:kv.command.task_info)
+}
+inline void command::set_task_info(const char* value, size_t size) {
+  set_has_task_info();
+  task_info_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:kv.command.task_info)
+}
+inline ::std::string* command::mutable_task_info() {
+  set_has_task_info();
+  // @@protoc_insertion_point(field_mutable:kv.command.task_info)
+  return task_info_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* command::release_task_info() {
+  // @@protoc_insertion_point(field_release:kv.command.task_info)
+  if (!has_task_info()) {
+    return NULL;
+  }
+  clear_has_task_info();
+  return task_info_.ReleaseNonDefaultNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void command::set_allocated_task_info(::std::string* task_info) {
+  if (task_info != NULL) {
+    set_has_task_info();
+  } else {
+    clear_has_task_info();
+  }
+  task_info_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), task_info);
+  // @@protoc_insertion_point(field_set_allocated:kv.command.task_info)
 }
 
 #ifdef __GNUC__

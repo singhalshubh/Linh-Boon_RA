@@ -57,15 +57,21 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, sender_type_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, sender_address_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, job_id_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, unique_job_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, data_center_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, unique_task_id_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, task_info_),
   0,
   1,
   2,
+  6,
   3,
+  7,
   4,
+  5,
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 10, sizeof(::kv::command)},
+  { 0, 13, sizeof(::kv::command)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -93,13 +99,14 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\014kvcomm.proto\022\002kv\"n\n\007command\022\021\n\tcomm_ty"
-      "pe\030\001 \002(\t\022\023\n\013sender_type\030\002 \001(\t\022\026\n\016sender_"
-      "address\030\003 \001(\t\022\016\n\006job_id\030\004 \002(\005\022\023\n\013data_ce"
-      "nter\030\005 \001(\005"
+      "\n\014kvcomm.proto\022\002kv\"\260\001\n\007command\022\021\n\tcomm_t"
+      "ype\030\001 \002(\t\022\023\n\013sender_type\030\002 \001(\t\022\026\n\016sender"
+      "_address\030\003 \001(\t\022\016\n\006job_id\030\004 \001(\005\022\025\n\runique"
+      "_job_id\030\005 \001(\t\022\023\n\013data_center\030\006 \001(\005\022\026\n\016un"
+      "ique_task_id\030\007 \001(\t\022\021\n\ttask_info\030\010 \001(\t"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 130);
+      descriptor, 197);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "kvcomm.proto", &protobuf_RegisterTypes);
 }
@@ -126,7 +133,10 @@ const int command::kCommTypeFieldNumber;
 const int command::kSenderTypeFieldNumber;
 const int command::kSenderAddressFieldNumber;
 const int command::kJobIdFieldNumber;
+const int command::kUniqueJobIdFieldNumber;
 const int command::kDataCenterFieldNumber;
+const int command::kUniqueTaskIdFieldNumber;
+const int command::kTaskInfoFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 command::command()
@@ -153,6 +163,18 @@ command::command(const command& from)
   if (from.has_sender_address()) {
     sender_address_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.sender_address_);
   }
+  unique_job_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.has_unique_job_id()) {
+    unique_job_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.unique_job_id_);
+  }
+  unique_task_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.has_unique_task_id()) {
+    unique_task_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.unique_task_id_);
+  }
+  task_info_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  if (from.has_task_info()) {
+    task_info_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.task_info_);
+  }
   ::memcpy(&job_id_, &from.job_id_,
     static_cast<size_t>(reinterpret_cast<char*>(&data_center_) -
     reinterpret_cast<char*>(&job_id_)) + sizeof(data_center_));
@@ -163,6 +185,9 @@ void command::SharedCtor() {
   comm_type_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   sender_type_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   sender_address_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  unique_job_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  unique_task_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  task_info_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(&job_id_, 0, static_cast<size_t>(
       reinterpret_cast<char*>(&data_center_) -
       reinterpret_cast<char*>(&job_id_)) + sizeof(data_center_));
@@ -177,6 +202,9 @@ void command::SharedDtor() {
   comm_type_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   sender_type_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   sender_address_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  unique_job_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  unique_task_id_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+  task_info_.DestroyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 
 void command::SetCachedSize(int size) const {
@@ -200,7 +228,7 @@ void command::Clear() {
   (void) cached_has_bits;
 
   cached_has_bits = _has_bits_[0];
-  if (cached_has_bits & 7u) {
+  if (cached_has_bits & 63u) {
     if (cached_has_bits & 0x00000001u) {
       comm_type_.ClearNonDefaultToEmptyNoArena();
     }
@@ -210,8 +238,17 @@ void command::Clear() {
     if (cached_has_bits & 0x00000004u) {
       sender_address_.ClearNonDefaultToEmptyNoArena();
     }
+    if (cached_has_bits & 0x00000008u) {
+      unique_job_id_.ClearNonDefaultToEmptyNoArena();
+    }
+    if (cached_has_bits & 0x00000010u) {
+      unique_task_id_.ClearNonDefaultToEmptyNoArena();
+    }
+    if (cached_has_bits & 0x00000020u) {
+      task_info_.ClearNonDefaultToEmptyNoArena();
+    }
   }
-  if (cached_has_bits & 24u) {
+  if (cached_has_bits & 192u) {
     ::memset(&job_id_, 0, static_cast<size_t>(
         reinterpret_cast<char*>(&data_center_) -
         reinterpret_cast<char*>(&job_id_)) + sizeof(data_center_));
@@ -278,7 +315,7 @@ bool command::MergePartialFromCodedStream(
         break;
       }
 
-      // required int32 job_id = 4;
+      // optional int32 job_id = 4;
       case 4: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
             static_cast< ::google::protobuf::uint8>(32u /* 32 & 0xFF */)) {
@@ -292,14 +329,62 @@ bool command::MergePartialFromCodedStream(
         break;
       }
 
-      // optional int32 data_center = 5;
+      // optional string unique_job_id = 5;
       case 5: {
         if (static_cast< ::google::protobuf::uint8>(tag) ==
-            static_cast< ::google::protobuf::uint8>(40u /* 40 & 0xFF */)) {
+            static_cast< ::google::protobuf::uint8>(42u /* 42 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_unique_job_id()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->unique_job_id().data(), static_cast<int>(this->unique_job_id().length()),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "kv.command.unique_job_id");
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional int32 data_center = 6;
+      case 6: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(48u /* 48 & 0xFF */)) {
           set_has_data_center();
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
                  input, &data_center_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional string unique_task_id = 7;
+      case 7: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(58u /* 58 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_unique_task_id()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->unique_task_id().data(), static_cast<int>(this->unique_task_id().length()),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "kv.command.unique_task_id");
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional string task_info = 8;
+      case 8: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(66u /* 66 & 0xFF */)) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadString(
+                input, this->mutable_task_info()));
+          ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+            this->task_info().data(), static_cast<int>(this->task_info().length()),
+            ::google::protobuf::internal::WireFormat::PARSE,
+            "kv.command.task_info");
         } else {
           goto handle_unusual;
         }
@@ -363,14 +448,44 @@ void command::SerializeWithCachedSizes(
       3, this->sender_address(), output);
   }
 
-  // required int32 job_id = 4;
-  if (cached_has_bits & 0x00000008u) {
+  // optional int32 job_id = 4;
+  if (cached_has_bits & 0x00000040u) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(4, this->job_id(), output);
   }
 
-  // optional int32 data_center = 5;
+  // optional string unique_job_id = 5;
+  if (cached_has_bits & 0x00000008u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->unique_job_id().data(), static_cast<int>(this->unique_job_id().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "kv.command.unique_job_id");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      5, this->unique_job_id(), output);
+  }
+
+  // optional int32 data_center = 6;
+  if (cached_has_bits & 0x00000080u) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(6, this->data_center(), output);
+  }
+
+  // optional string unique_task_id = 7;
   if (cached_has_bits & 0x00000010u) {
-    ::google::protobuf::internal::WireFormatLite::WriteInt32(5, this->data_center(), output);
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->unique_task_id().data(), static_cast<int>(this->unique_task_id().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "kv.command.unique_task_id");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      7, this->unique_task_id(), output);
+  }
+
+  // optional string task_info = 8;
+  if (cached_has_bits & 0x00000020u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->task_info().data(), static_cast<int>(this->task_info().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "kv.command.task_info");
+    ::google::protobuf::internal::WireFormatLite::WriteStringMaybeAliased(
+      8, this->task_info(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -421,14 +536,47 @@ void command::SerializeWithCachedSizes(
         3, this->sender_address(), target);
   }
 
-  // required int32 job_id = 4;
-  if (cached_has_bits & 0x00000008u) {
+  // optional int32 job_id = 4;
+  if (cached_has_bits & 0x00000040u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(4, this->job_id(), target);
   }
 
-  // optional int32 data_center = 5;
+  // optional string unique_job_id = 5;
+  if (cached_has_bits & 0x00000008u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->unique_job_id().data(), static_cast<int>(this->unique_job_id().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "kv.command.unique_job_id");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        5, this->unique_job_id(), target);
+  }
+
+  // optional int32 data_center = 6;
+  if (cached_has_bits & 0x00000080u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(6, this->data_center(), target);
+  }
+
+  // optional string unique_task_id = 7;
   if (cached_has_bits & 0x00000010u) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(5, this->data_center(), target);
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->unique_task_id().data(), static_cast<int>(this->unique_task_id().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "kv.command.unique_task_id");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        7, this->unique_task_id(), target);
+  }
+
+  // optional string task_info = 8;
+  if (cached_has_bits & 0x00000020u) {
+    ::google::protobuf::internal::WireFormat::VerifyUTF8StringNamedField(
+      this->task_info().data(), static_cast<int>(this->task_info().length()),
+      ::google::protobuf::internal::WireFormat::SERIALIZE,
+      "kv.command.task_info");
+    target =
+      ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
+        8, this->task_info(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -439,26 +587,6 @@ void command::SerializeWithCachedSizes(
   return target;
 }
 
-size_t command::RequiredFieldsByteSizeFallback() const {
-// @@protoc_insertion_point(required_fields_byte_size_fallback_start:kv.command)
-  size_t total_size = 0;
-
-  if (has_comm_type()) {
-    // required string comm_type = 1;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::StringSize(
-        this->comm_type());
-  }
-
-  if (has_job_id()) {
-    // required int32 job_id = 4;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->job_id());
-  }
-
-  return total_size;
-}
 size_t command::ByteSizeLong() const {
 // @@protoc_insertion_point(message_byte_size_start:kv.command)
   size_t total_size = 0;
@@ -468,21 +596,13 @@ size_t command::ByteSizeLong() const {
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
         _internal_metadata_.unknown_fields());
   }
-  if (((_has_bits_[0] & 0x00000009) ^ 0x00000009) == 0) {  // All required fields are present.
-    // required string comm_type = 1;
+  // required string comm_type = 1;
+  if (has_comm_type()) {
     total_size += 1 +
       ::google::protobuf::internal::WireFormatLite::StringSize(
         this->comm_type());
-
-    // required int32 job_id = 4;
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->job_id());
-
-  } else {
-    total_size += RequiredFieldsByteSizeFallback();
   }
-  if (_has_bits_[0 / 32] & 6u) {
+  if (_has_bits_[0 / 32] & 254u) {
     // optional string sender_type = 2;
     if (has_sender_type()) {
       total_size += 1 +
@@ -497,14 +617,42 @@ size_t command::ByteSizeLong() const {
           this->sender_address());
     }
 
-  }
-  // optional int32 data_center = 5;
-  if (has_data_center()) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->data_center());
-  }
+    // optional string unique_job_id = 5;
+    if (has_unique_job_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->unique_job_id());
+    }
 
+    // optional string unique_task_id = 7;
+    if (has_unique_task_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->unique_task_id());
+    }
+
+    // optional string task_info = 8;
+    if (has_task_info()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::StringSize(
+          this->task_info());
+    }
+
+    // optional int32 job_id = 4;
+    if (has_job_id()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->job_id());
+    }
+
+    // optional int32 data_center = 6;
+    if (has_data_center()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->data_center());
+    }
+
+  }
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
@@ -533,7 +681,7 @@ void command::MergeFrom(const command& from) {
   (void) cached_has_bits;
 
   cached_has_bits = from._has_bits_[0];
-  if (cached_has_bits & 31u) {
+  if (cached_has_bits & 255u) {
     if (cached_has_bits & 0x00000001u) {
       set_has_comm_type();
       comm_type_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.comm_type_);
@@ -547,9 +695,21 @@ void command::MergeFrom(const command& from) {
       sender_address_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.sender_address_);
     }
     if (cached_has_bits & 0x00000008u) {
-      job_id_ = from.job_id_;
+      set_has_unique_job_id();
+      unique_job_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.unique_job_id_);
     }
     if (cached_has_bits & 0x00000010u) {
+      set_has_unique_task_id();
+      unique_task_id_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.unique_task_id_);
+    }
+    if (cached_has_bits & 0x00000020u) {
+      set_has_task_info();
+      task_info_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.task_info_);
+    }
+    if (cached_has_bits & 0x00000040u) {
+      job_id_ = from.job_id_;
+    }
+    if (cached_has_bits & 0x00000080u) {
       data_center_ = from.data_center_;
     }
     _has_bits_[0] |= cached_has_bits;
@@ -571,7 +731,7 @@ void command::CopyFrom(const command& from) {
 }
 
 bool command::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000009) != 0x00000009) return false;
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
   return true;
 }
 
@@ -586,6 +746,12 @@ void command::InternalSwap(command* other) {
   sender_type_.Swap(&other->sender_type_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   sender_address_.Swap(&other->sender_address_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  unique_job_id_.Swap(&other->unique_job_id_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  unique_task_id_.Swap(&other->unique_task_id_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+    GetArenaNoVirtual());
+  task_info_.Swap(&other->task_info_, &::google::protobuf::internal::GetEmptyStringAlreadyInited(),
     GetArenaNoVirtual());
   swap(job_id_, other->job_id_);
   swap(data_center_, other->data_center_);

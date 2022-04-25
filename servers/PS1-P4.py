@@ -6,7 +6,7 @@ import numpy as np
 from logistic_regression import LogisticRegression
 
 numberOfFolds = 5
-numberOfLambdas = 8
+numberOfLambdas = 1
 foldTrainingError = np.zeros(numberOfLambdas)
 foldTestError = np.zeros(numberOfLambdas)
 foldTestsetError = np.zeros(numberOfLambdas)
@@ -25,15 +25,15 @@ def main() :
 	print(foldTrainingError)
 	print(foldTestError)
 	print(foldTestsetError)
-	plt.plot(parameterArray, foldTrainingError, markerfacecolor='red', label = "trainingError")
-	plt.plot(parameterArray, foldTestError, markerfacecolor='blue', label = "crossValidationError")
-	plt.plot(parameterArray, foldTestsetError, markerfacecolor='black', label = "testError")
-	plt.title("Learning Curve with Regularization")
-	plt.xlabel("Log of Lambdas")
-	plt.ylabel("Error")
-	plt.legend()
-	plt.savefig("LearningCurveP4B")
-	plt.close()
+	# plt.plot(parameterArray, foldTrainingError, markerfacecolor='red', label = "trainingError")
+	# plt.plot(parameterArray, foldTestError, markerfacecolor='blue', label = "crossValidationError")
+	# plt.plot(parameterArray, foldTestsetError, markerfacecolor='black', label = "testError")
+	# plt.title("Learning Curve with Regularization")
+	# plt.xlabel("Log of Lambdas")
+	# plt.ylabel("Error")
+	# plt.legend()
+	# plt.savefig("LearningCurveP4B")
+	# plt.close()
 
 def LogisticRegressionWithoutRegularization() :
 	trainingError = np.zeros(10)

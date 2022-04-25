@@ -85,7 +85,8 @@ int main(int argc, char *argv[]) {
     kv::command job;
     job.set_comm_type("Client:Job");
     job.set_job_id(1);
-    job.set_data_center(1);
+    job.set_sender_address(ip_port);
+    job.set_data_center(2);
     writeCommand(sock_fd, job);
     //response = readResponse(sock_fd);
     //printResponse(response);
