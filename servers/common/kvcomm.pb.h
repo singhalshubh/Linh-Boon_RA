@@ -257,6 +257,13 @@ class command : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::google::protobuf::int32 data_center() const;
   void set_data_center(::google::protobuf::int32 value);
 
+  // optional int32 compute_task = 9;
+  bool has_compute_task() const;
+  void clear_compute_task();
+  static const int kComputeTaskFieldNumber = 9;
+  ::google::protobuf::int32 compute_task() const;
+  void set_compute_task(::google::protobuf::int32 value);
+
   // @@protoc_insertion_point(class_scope:kv.command)
  private:
   void set_has_comm_type();
@@ -275,6 +282,8 @@ class command : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   void clear_has_unique_task_id();
   void set_has_task_info();
   void clear_has_task_info();
+  void set_has_compute_task();
+  void clear_has_compute_task();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
@@ -287,6 +296,7 @@ class command : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::google::protobuf::internal::ArenaStringPtr task_info_;
   ::google::protobuf::int32 job_id_;
   ::google::protobuf::int32 data_center_;
+  ::google::protobuf::int32 compute_task_;
   friend struct ::protobuf_kvcomm_2eproto::TableStruct;
 };
 // ===================================================================
@@ -742,6 +752,30 @@ inline void command::set_allocated_task_info(::std::string* task_info) {
   }
   task_info_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), task_info);
   // @@protoc_insertion_point(field_set_allocated:kv.command.task_info)
+}
+
+// optional int32 compute_task = 9;
+inline bool command::has_compute_task() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void command::set_has_compute_task() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void command::clear_has_compute_task() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void command::clear_compute_task() {
+  compute_task_ = 0;
+  clear_has_compute_task();
+}
+inline ::google::protobuf::int32 command::compute_task() const {
+  // @@protoc_insertion_point(field_get:kv.command.compute_task)
+  return compute_task_;
+}
+inline void command::set_compute_task(::google::protobuf::int32 value) {
+  set_has_compute_task();
+  compute_task_ = value;
+  // @@protoc_insertion_point(field_set:kv.command.compute_task)
 }
 
 #ifdef __GNUC__

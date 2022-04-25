@@ -22,12 +22,15 @@ var NetworkTopology: mesh, ring, adj_matrix, adj_list where the partition of whi
 #include <cstdlib>
 #include <cstdio>
 #include <unistd.h>
+#include <sys/wait.h>
+#include <time.h>
 #include <arpa/inet.h>
 #include <vector>
 #include <strings.h>
 #include <sys/socket.h>
 #include <string>
 #include <unordered_map>
+
 #include <semaphore.h>
 #include <fstream>
 #include "./common/kvcomm.pb.h"
@@ -60,10 +63,11 @@ struct thread_info {
 
 struct task {
 
-	vector<vector<string>> command;
+	vector<string> command;
 	int datacenter;
 	int compute;
 	int input_vol;
+	string task_id;
 
 };
 
@@ -76,11 +80,13 @@ struct job {
 };
 
 vector<struct job*> job_queue;
-
+vector<struct task*>task_queue;
 pthread_mutex_t isSchedulerJobRun;
+pthread_mutex_t isSchedulerTaskRun;
 pthread_mutex_t jobQueue;
+pthread_mutex_t taskQueue;
 bool flag_scheduler_run_job = false;
-
+bool flag_scheduler_run_task = false;
 
 sockaddr_in getSockAddr(const std::string &ip_port) {
     size_t position = ip_port.find(':');
@@ -117,17 +123,67 @@ void writeCommand(int sock_fd, kv::command &command){
 }
 
 
-int jobRun(string command, int timeout) {
+int taskRun(string command) {
 
 	int childpid = fork();
-	if(childpid = 0) {
+	if(childpid == 0) {
 
-
+		// Maintianed for (only) python scripts without any flags
+		char *argv[3];
+		argv[0] = (char *) "/usr/bin/python3";
+        argv[1] = (char *) command.c_str();
+        argv[2] = NULL;
+           //execvp("/usr/bin/python",argv);
+        execvp(argv[0], argv);
 
 	}
 	else {
 
+		wait(NULL);
 
+	}
+
+}
+
+// Taks execution begins from here wrt to scheduler
+void schedulerRunTask(string type) {
+
+	if(type.compare("scf") == 0) {
+
+		while(!task_queue.empty()) {
+			pthread_mutex_lock(&taskQueue);
+
+			int min_compute = task_queue[0]->compute;
+			int pos = 0;
+			// Perform the iteration!
+			for(int i = 0; i < task_queue.size(); i++) {
+
+				if(min_compute > task_queue[i]->compute) {
+					pos = i;
+					min_compute = task_queue[i]->compute;
+				}
+			}
+
+			task_queue.erase(task_queue.begin()+pos);
+
+			// fprintf(stderr, "%d\n", min_exec_time);
+			pthread_mutex_unlock(&taskQueue);
+			// Execute the job by undangling the task stored in vector<tasks>
+				
+			clock_t t;
+    		t = clock();
+
+			for(auto command: task_queue[pos]->command) {
+
+				taskRun(command);
+
+			}
+
+			t = clock() - t;
+			fprintf(stderr, "%f\n", (double) t/CLOCKS_PER_SEC);
+			// time noted for the task and then returned from the sender suing task-map!
+			
+		}
 	}
 
 }
@@ -137,51 +193,75 @@ int schedulerRun(string type) {
 	if(type.compare("stf") == 0) {
 
 		pthread_mutex_lock(&jobQueue);
+		fprintf(stderr, "Running\n");
+		while(!job_queue.empty()) {
 
-		int min_exec_time = job_queue[0]->estimatedTime;
-		int pos = 0;
-		// Perform the iteration!
-		for(int i = 0; i < job_queue.size(); i++) {
+			int min_exec_time = job_queue[0]->estimatedTime;
+			int pos = 0;
+			// Perform the iteration!
+			for(int i = 0; i < job_queue.size(); i++) {
 
-			if(min_exec_time > job_queue[i]->estimatedTime) {
-				pos = i;
-				min_exec_time = job_queue[i]->estimatedTime;
+				if(min_exec_time > job_queue[i]->estimatedTime) {
+					pos = i;
+					min_exec_time = job_queue[i]->estimatedTime;
+				}
+			}
+
+			job_queue.erase(job_queue.begin()+pos);
+			fprintf(stderr, "[Size left]%ld\n",job_queue.size());
+
+			// fprintf(stderr, "%d\n", min_exec_time);
+			// Execute the job by undangling the task stored in vector<tasks>
+			
+			for(int i = 0; i < job_queue[pos] -> tasks.size(); i++) {
+
+				struct r* mapping = new r;
+				mapping->sender = server_address;
+				task_map.insert(make_pair(job_queue[pos] -> job_desc.unique_job_id() + to_string(i), mapping));
+
+				kv::command task;
+				task.set_comm_type("Task-Reply");
+				task.set_sender_address(server_address);
+				task.set_compute_task(job_queue[pos]->tasks[i]->compute);
+				// Only one task per task, not consideriung parallel tasks
+				string task_list = "";
+				for(auto t : job_queue[pos]->tasks[i]->command) {
+					task_list += t + ",";
+				}
+				task_list += "END";
+				task.set_task_info(task_list);
+				task.set_unique_task_id(job_queue[pos] -> job_desc.unique_job_id() + to_string(i));
+
+				string to_send = serverInfo[job_queue[pos]->tasks[i]->datacenter - 1] -> address;
+				int sock_fd = socket(PF_INET, SOCK_STREAM, 0);
+			    struct sockaddr_in servaddr = getSockAddr(to_send);
+			    if (connect(sock_fd, (struct sockaddr *) &servaddr, sizeof(servaddr)) != -1) {
+					fprintf(stderr, "[Writing to the server]\n");
+					writeCommand(sock_fd, task);
+				}
+
+
 			}
 		}
-		// fprintf(stderr, "%d\n", min_exec_time);
 		pthread_mutex_unlock(&jobQueue);
-		// Execute the job by undangling the task stored in vector<tasks>
-		
-		for(int i = 0; i < job_queue[pos] -> tasks.size(); i++) {
-
-			struct r* mapping = new r;
-			mapping->sender = server_address;
-			task_map.insert(make_pair(job_queue[pos] -> job_desc.unique_job_id() + to_string(i), mapping));
-
-			kv::command task;
-			task.set_comm_type("Task-Reply");
-			task.set_sender_address(server_address);
-			// Only one task per task, not consideriung parallel tasks
-			task.set_task_info(job_queue[pos]->tasks[i]->command[0][0]);
-
-			string to_send = serverInfo[job_queue[pos]->tasks[i]->datacenter - 1] -> address;
-			int sock_fd = socket(PF_INET, SOCK_STREAM, 0);
-		    struct sockaddr_in servaddr = getSockAddr(to_send);
-		    if (connect(sock_fd, (struct sockaddr *) &servaddr, sizeof(servaddr)) != -1) {
-				fprintf(stderr, "[Writing to the server]\n");
-				writeCommand(sock_fd, task);
-			}
-
-
-		}
 
 
 	}
 
 }
 
+
+void indicateSchedulerTaskToRun() {
+	pthread_mutex_lock(&isSchedulerTaskRun);
+	flag_scheduler_run_task = true;
+	pthread_mutex_unlock(&isSchedulerTaskRun);
+	schedulerRunTask("scf");
+}
+
 void indicateSchedulerJobToRun() {
+	pthread_mutex_lock(&isSchedulerJobRun);
 	flag_scheduler_run_job = true;
+	pthread_mutex_unlock(&isSchedulerJobRun);
 	schedulerRun("stf");
 	
 	// round robin scheduler!
@@ -213,12 +293,10 @@ void readFromJobsJson(string jobs_fileName, struct job *nn, int index) {
 		struct task *tt = new task;
 		// fprintf(stderr, "Reading%d\n", job_file_info[job_index].size());
 
-		vector<string>commands;
 		for(int i = 0; i < job_file_info[job_index][tracker]["command"].size(); i++) {
-			commands.push_back(job_file_info[job_index][tracker]["command"][i].asString());
+			tt->command.push_back(job_file_info[job_index][tracker]["command"][i].asString());
 		}
 
-		tt->command.push_back(commands);
 		tt->datacenter = job_file_info[job_index][tracker]["datacenter"].asInt();
 		tt->compute = job_file_info[job_index][tracker]["compute"].asInt();
 		tt->input_vol = job_file_info[job_index][tracker]["input"].asInt();
@@ -296,21 +374,53 @@ void processCommand(struct thread_info* node, kv::command &command) {
 		// 	}
 		// }
 
-		pthread_mutex_lock(&isSchedulerJobRun);
-
 		if(flag_scheduler_run_job == false) {
 			indicateSchedulerJobToRun();
 		}
 
-		pthread_mutex_unlock(&isSchedulerJobRun);
 
 		// Execute the job like DAG and record the times at individual DC using logs
 		// Return the request to the server who send it.
 
 	}
-	else {
+	else if(command.comm_type().compare("Task-Reply") == 0) {
 		// SM execution which is just executing the next thing in task queue.
 		fprintf(stderr, "%s\n",command.comm_type().c_str());
+		if(task_map.find(command.unique_task_id()) == task_map.end()) {
+			struct r* mapping = new r;
+			mapping->sender = command.sender_address();
+			task_map.insert(make_pair(command.unique_task_id(), mapping));
+		}
+		else {
+			fprintf(stderr, "Belgins to the same DC\n");
+		}
+		struct task *nn = new task;
+		nn->compute = command.compute_task();
+		nn->task_id = command.unique_task_id();
+		string s = "";
+		for(auto c : command.task_info()) {
+			if(c == 'E') {
+				break;
+			}
+			else if(c != ',') {
+				s += c; 
+			}
+
+			else if(c == ',') {
+				nn->command.push_back(s);
+				fprintf(stderr, "[String]%s\n", s.c_str());
+				s = "";
+			}
+
+		}
+		
+		pthread_mutex_lock(&taskQueue);
+		task_queue.push_back(nn);
+		pthread_mutex_unlock(&taskQueue);
+
+		if(flag_scheduler_run_task == false) {
+			indicateSchedulerTaskToRun();
+		}
 	}
 
 }

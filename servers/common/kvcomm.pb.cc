@@ -61,6 +61,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, data_center_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, unique_task_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, task_info_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, compute_task_),
   0,
   1,
   2,
@@ -69,9 +70,10 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   7,
   4,
   5,
+  8,
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 13, sizeof(::kv::command)},
+  { 0, 14, sizeof(::kv::command)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -99,14 +101,15 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\014kvcomm.proto\022\002kv\"\260\001\n\007command\022\021\n\tcomm_t"
+      "\n\014kvcomm.proto\022\002kv\"\306\001\n\007command\022\021\n\tcomm_t"
       "ype\030\001 \002(\t\022\023\n\013sender_type\030\002 \001(\t\022\026\n\016sender"
       "_address\030\003 \001(\t\022\016\n\006job_id\030\004 \001(\005\022\025\n\runique"
       "_job_id\030\005 \001(\t\022\023\n\013data_center\030\006 \001(\005\022\026\n\016un"
-      "ique_task_id\030\007 \001(\t\022\021\n\ttask_info\030\010 \001(\t"
+      "ique_task_id\030\007 \001(\t\022\021\n\ttask_info\030\010 \001(\t\022\024\n"
+      "\014compute_task\030\t \001(\005"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 197);
+      descriptor, 219);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "kvcomm.proto", &protobuf_RegisterTypes);
 }
@@ -137,6 +140,7 @@ const int command::kUniqueJobIdFieldNumber;
 const int command::kDataCenterFieldNumber;
 const int command::kUniqueTaskIdFieldNumber;
 const int command::kTaskInfoFieldNumber;
+const int command::kComputeTaskFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 command::command()
@@ -176,8 +180,8 @@ command::command(const command& from)
     task_info_.AssignWithDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), from.task_info_);
   }
   ::memcpy(&job_id_, &from.job_id_,
-    static_cast<size_t>(reinterpret_cast<char*>(&data_center_) -
-    reinterpret_cast<char*>(&job_id_)) + sizeof(data_center_));
+    static_cast<size_t>(reinterpret_cast<char*>(&compute_task_) -
+    reinterpret_cast<char*>(&job_id_)) + sizeof(compute_task_));
   // @@protoc_insertion_point(copy_constructor:kv.command)
 }
 
@@ -189,8 +193,8 @@ void command::SharedCtor() {
   unique_task_id_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   task_info_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(&job_id_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&data_center_) -
-      reinterpret_cast<char*>(&job_id_)) + sizeof(data_center_));
+      reinterpret_cast<char*>(&compute_task_) -
+      reinterpret_cast<char*>(&job_id_)) + sizeof(compute_task_));
 }
 
 command::~command() {
@@ -253,6 +257,7 @@ void command::Clear() {
         reinterpret_cast<char*>(&data_center_) -
         reinterpret_cast<char*>(&job_id_)) + sizeof(data_center_));
   }
+  compute_task_ = 0;
   _has_bits_.Clear();
   _internal_metadata_.Clear();
 }
@@ -391,6 +396,20 @@ bool command::MergePartialFromCodedStream(
         break;
       }
 
+      // optional int32 compute_task = 9;
+      case 9: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(72u /* 72 & 0xFF */)) {
+          set_has_compute_task();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &compute_task_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
       default: {
       handle_unusual:
         if (tag == 0) {
@@ -488,6 +507,11 @@ void command::SerializeWithCachedSizes(
       8, this->task_info(), output);
   }
 
+  // optional int32 compute_task = 9;
+  if (cached_has_bits & 0x00000100u) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(9, this->compute_task(), output);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         _internal_metadata_.unknown_fields(), output);
@@ -579,6 +603,11 @@ void command::SerializeWithCachedSizes(
         8, this->task_info(), target);
   }
 
+  // optional int32 compute_task = 9;
+  if (cached_has_bits & 0x00000100u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(9, this->compute_task(), target);
+  }
+
   if (_internal_metadata_.have_unknown_fields()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields(), target);
@@ -653,6 +682,13 @@ size_t command::ByteSizeLong() const {
     }
 
   }
+  // optional int32 compute_task = 9;
+  if (has_compute_task()) {
+    total_size += 1 +
+      ::google::protobuf::internal::WireFormatLite::Int32Size(
+        this->compute_task());
+  }
+
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
@@ -714,6 +750,9 @@ void command::MergeFrom(const command& from) {
     }
     _has_bits_[0] |= cached_has_bits;
   }
+  if (cached_has_bits & 0x00000100u) {
+    set_compute_task(from.compute_task());
+  }
 }
 
 void command::CopyFrom(const ::google::protobuf::Message& from) {
@@ -755,6 +794,7 @@ void command::InternalSwap(command* other) {
     GetArenaNoVirtual());
   swap(job_id_, other->job_id_);
   swap(data_center_, other->data_center_);
+  swap(compute_task_, other->compute_task_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }

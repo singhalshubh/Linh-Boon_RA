@@ -11,4 +11,5 @@ message command {
   optional int32 data_center = 6;
   optional string unique_task_id = 7;
   optional string task_info = 8;
+  optional int32 compute_task = 9;
 }

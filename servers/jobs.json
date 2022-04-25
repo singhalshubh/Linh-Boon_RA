@@ -7,17 +7,24 @@
 			},
 			"1": 
 			{
-				"compute": 2,
+				"compute": 100,
 				"input": 2,
 				"datacenter":1,
-				"command": ["python3 PS1-P4.py"]
+				"command": ["PS1-P4.py"]
 			},
 			"2": 
 			{
-				"compute": 3,
+				"compute": 30,
 				"input": 1,
 				"datacenter": 1,
-				"command": ["python3 PS1-P6.py"]
+				"command": ["PS1-P6.py"]
+			},
+			"3": 
+			{
+				"compute": 1,
+				"input": 2,
+				"datacenter":1,
+				"command": ["PS1-P4.py"]
 			}
 	}
 
