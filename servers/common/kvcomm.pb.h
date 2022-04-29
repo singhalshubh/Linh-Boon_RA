@@ -257,6 +257,27 @@ class command : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::google::protobuf::int32 data_center() const;
   void set_data_center(::google::protobuf::int32 value);
 
+  // optional double exec_time = 10;
+  bool has_exec_time() const;
+  void clear_exec_time();
+  static const int kExecTimeFieldNumber = 10;
+  double exec_time() const;
+  void set_exec_time(double value);
+
+  // optional double waiting_time = 11;
+  bool has_waiting_time() const;
+  void clear_waiting_time();
+  static const int kWaitingTimeFieldNumber = 11;
+  double waiting_time() const;
+  void set_waiting_time(double value);
+
+  // optional double rtt_time_total = 12;
+  bool has_rtt_time_total() const;
+  void clear_rtt_time_total();
+  static const int kRttTimeTotalFieldNumber = 12;
+  double rtt_time_total() const;
+  void set_rtt_time_total(double value);
+
   // optional int32 compute_task = 9;
   bool has_compute_task() const;
   void clear_compute_task();
@@ -284,6 +305,12 @@ class command : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   void clear_has_task_info();
   void set_has_compute_task();
   void clear_has_compute_task();
+  void set_has_exec_time();
+  void clear_has_exec_time();
+  void set_has_waiting_time();
+  void clear_has_waiting_time();
+  void set_has_rtt_time_total();
+  void clear_has_rtt_time_total();
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::HasBits<1> _has_bits_;
@@ -296,6 +323,9 @@ class command : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   ::google::protobuf::internal::ArenaStringPtr task_info_;
   ::google::protobuf::int32 job_id_;
   ::google::protobuf::int32 data_center_;
+  double exec_time_;
+  double waiting_time_;
+  double rtt_time_total_;
   ::google::protobuf::int32 compute_task_;
   friend struct ::protobuf_kvcomm_2eproto::TableStruct;
 };
@@ -756,13 +786,13 @@ inline void command::set_allocated_task_info(::std::string* task_info) {
 
 // optional int32 compute_task = 9;
 inline bool command::has_compute_task() const {
-  return (_has_bits_[0] & 0x00000100u) != 0;
+  return (_has_bits_[0] & 0x00000800u) != 0;
 }
 inline void command::set_has_compute_task() {
-  _has_bits_[0] |= 0x00000100u;
+  _has_bits_[0] |= 0x00000800u;
 }
 inline void command::clear_has_compute_task() {
-  _has_bits_[0] &= ~0x00000100u;
+  _has_bits_[0] &= ~0x00000800u;
 }
 inline void command::clear_compute_task() {
   compute_task_ = 0;
@@ -776,6 +806,78 @@ inline void command::set_compute_task(::google::protobuf::int32 value) {
   set_has_compute_task();
   compute_task_ = value;
   // @@protoc_insertion_point(field_set:kv.command.compute_task)
+}
+
+// optional double exec_time = 10;
+inline bool command::has_exec_time() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void command::set_has_exec_time() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void command::clear_has_exec_time() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void command::clear_exec_time() {
+  exec_time_ = 0;
+  clear_has_exec_time();
+}
+inline double command::exec_time() const {
+  // @@protoc_insertion_point(field_get:kv.command.exec_time)
+  return exec_time_;
+}
+inline void command::set_exec_time(double value) {
+  set_has_exec_time();
+  exec_time_ = value;
+  // @@protoc_insertion_point(field_set:kv.command.exec_time)
+}
+
+// optional double waiting_time = 11;
+inline bool command::has_waiting_time() const {
+  return (_has_bits_[0] & 0x00000200u) != 0;
+}
+inline void command::set_has_waiting_time() {
+  _has_bits_[0] |= 0x00000200u;
+}
+inline void command::clear_has_waiting_time() {
+  _has_bits_[0] &= ~0x00000200u;
+}
+inline void command::clear_waiting_time() {
+  waiting_time_ = 0;
+  clear_has_waiting_time();
+}
+inline double command::waiting_time() const {
+  // @@protoc_insertion_point(field_get:kv.command.waiting_time)
+  return waiting_time_;
+}
+inline void command::set_waiting_time(double value) {
+  set_has_waiting_time();
+  waiting_time_ = value;
+  // @@protoc_insertion_point(field_set:kv.command.waiting_time)
+}
+
+// optional double rtt_time_total = 12;
+inline bool command::has_rtt_time_total() const {
+  return (_has_bits_[0] & 0x00000400u) != 0;
+}
+inline void command::set_has_rtt_time_total() {
+  _has_bits_[0] |= 0x00000400u;
+}
+inline void command::clear_has_rtt_time_total() {
+  _has_bits_[0] &= ~0x00000400u;
+}
+inline void command::clear_rtt_time_total() {
+  rtt_time_total_ = 0;
+  clear_has_rtt_time_total();
+}
+inline double command::rtt_time_total() const {
+  // @@protoc_insertion_point(field_get:kv.command.rtt_time_total)
+  return rtt_time_total_;
+}
+inline void command::set_rtt_time_total(double value) {
+  set_has_rtt_time_total();
+  rtt_time_total_ = value;
+  // @@protoc_insertion_point(field_set:kv.command.rtt_time_total)
 }
 
 #ifdef __GNUC__

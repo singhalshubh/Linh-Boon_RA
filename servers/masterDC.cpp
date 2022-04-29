@@ -40,9 +40,14 @@ var NetworkTopology: mesh, ring, adj_matrix, adj_list where the partition of whi
 
 struct r {
 
-	int ans;
+	// Facility to return the answer would definitely be considered but application specific!
+	double arrival_time;
+	double waiting_time;
+	double rtt_time_total;
+	int number_of_tasks;
 	string sender;
-	int time;
+	string cor_job_id;
+	double exec_time;
 };
 
 unordered_map<string, struct r*> job_map;
@@ -165,13 +170,20 @@ void schedulerRunTask(string type) {
 			}
 
 			task_queue.erase(task_queue.begin()+pos);
-
+			// Update the waiting times
+			unordered_map<string, struct r*>:: iterator t;
+			if( (t = task_map.find(task_queue[pos]->task_id)) != task_map.end()) {
+				t->second->waiting_time = time(NULL) - t->second->arrival_time; // Waiting time is in seconds and is the difference for the time-arrival!
+			}
+			else {
+				fprintf(stderr, "[Task Map at fault, please check code!]\n");
+			}
 			// fprintf(stderr, "%d\n", min_exec_time);
 			pthread_mutex_unlock(&taskQueue);
 			// Execute the job by undangling the task stored in vector<tasks>
 				
-			clock_t t;
-    		t = clock();
+			clock_t t1;
+    		t1 = clock();
 
 			for(auto command: task_queue[pos]->command) {
 
@@ -179,10 +191,26 @@ void schedulerRunTask(string type) {
 
 			}
 
-			t = clock() - t;
-			fprintf(stderr, "%f\n", (double) t/CLOCKS_PER_SEC);
+			t1 = clock() - t1;
+			t->second->exec_time = (double) t1/CLOCKS_PER_SEC;
+			fprintf(stderr, "Time taken: %f\n", t->second->exec_time);
 			// time noted for the task and then returned from the sender suing task-map!
-			
+			// Return the struct r to the sender!
+			kv::command task_response;
+			task_response.set_comm_type("Task-Response");
+			task_response.set_unique_task_id(t->first);
+			task_response.set_waiting_time(t->second->waiting_time);
+			task_response.set_exec_time(t->second->exec_time);
+			//fprintf(stderr, "Sending the task_response\n");
+			fprintf(stderr, "%s\n", t->second->sender.c_str());
+			int sock_fd = socket(PF_INET, SOCK_STREAM, 0);
+		    struct sockaddr_in servaddr = getSockAddr(t->second->sender);
+		    if (connect(sock_fd, (struct sockaddr *) &servaddr, sizeof(servaddr)) != -1) {
+				fprintf(stderr, "[Writing to the server]: %s\n", t->second->sender.c_str());
+				writeCommand(sock_fd, task_response);
+			}
+			close(sock_fd);
+
 		}
 	}
 
@@ -208,15 +236,24 @@ int schedulerRun(string type) {
 			}
 
 			job_queue.erase(job_queue.begin()+pos);
+
 			fprintf(stderr, "[Size left]%ld\n",job_queue.size());
 
 			// fprintf(stderr, "%d\n", min_exec_time);
 			// Execute the job by undangling the task stored in vector<tasks>
+			unordered_map<string, struct r*>::iterator j;
+			if( (j = job_map.find(job_queue[pos]->job_desc.unique_job_id())) != job_map.end()) {
+				j->second->number_of_tasks = job_queue[pos]->tasks.size();
+			}
+			else {
+				fprintf(stderr, "[Error in job_map, please check the code]\n");
+			}
 			
 			for(int i = 0; i < job_queue[pos] -> tasks.size(); i++) {
 
 				struct r* mapping = new r;
 				mapping->sender = server_address;
+				mapping->cor_job_id = job_queue[pos]-> job_desc.unique_job_id();
 				task_map.insert(make_pair(job_queue[pos] -> job_desc.unique_job_id() + to_string(i), mapping));
 
 				kv::command task;
@@ -365,6 +402,9 @@ void processCommand(struct thread_info* node, kv::command &command) {
 			job_map.insert(make_pair(command.unique_job_id(), mapping));
 		}
 
+		// Update the mapping for unique_job_id -> number of tasks to the task_size(done in readFromJobs)!
+
+
 		pthread_mutex_lock(&jobQueue);
 		job_queue.push_back(nn);
 		pthread_mutex_unlock(&jobQueue);
@@ -389,6 +429,7 @@ void processCommand(struct thread_info* node, kv::command &command) {
 		if(task_map.find(command.unique_task_id()) == task_map.end()) {
 			struct r* mapping = new r;
 			mapping->sender = command.sender_address();
+			mapping->arrival_time = time(NULL);
 			task_map.insert(make_pair(command.unique_task_id(), mapping));
 		}
 		else {
@@ -421,6 +462,35 @@ void processCommand(struct thread_info* node, kv::command &command) {
 		if(flag_scheduler_run_task == false) {
 			indicateSchedulerTaskToRun();
 		}
+	}
+	else if(command.comm_type().compare("Task-Response") == 0) {
+		// After receiving the task response you need to send it to the corresponding client at the end.
+		// So if the sender type is server, then keep on passing, otherwise, received_time - issue_time,
+		// Sending the task to the server who is issuing the job is important first and then the iteration can happen for rtt, so rtt should be in job!
+
+		// Get theb unique_job_id;
+		unordered_map<string, struct r*>::iterator j;
+		unordered_map<string, struct r*>::iterator t;
+		string cor_job_id;
+		if( (t = task_map.find(command.unique_task_id())) != task_map.end()) {
+			cor_job_id = t->second->cor_job_id;
+			if( (j = job_map.find(cor_job_id)) != job_map.end()) {
+				j->second->number_of_tasks--;
+				if(j->second->number_of_tasks == 0) {
+					// send to the srevrs and client respectively iterastively!
+					//Unfold all times from the tasks stored in jobs<vector tasks> and then return the corresponding total and print on the screen all the wait times!
+
+				}
+			}
+			else {
+				fprintf(stderr, "[Error in code, please check job_map, in task-response!]\n");
+			}
+		}
+		else {
+			fprintf(stderr, "[Error in code, please check task_map, in task-response!]\n");
+		}
+
+
 	}
 
 }
@@ -458,6 +528,8 @@ int main(int argc, char *argv[]) {
 	
 	server_port = serverInfo[server_number] -> port;
 	server_ip = serverInfo[server_number] -> ip;
+
+	server_address = server_ip + ":" + to_string(server_port);
 
 	fprintf(stderr, "Server is running at: %s:%d\n",serverInfo[server_number]->ip.c_str(), serverInfo[server_number]->port);
 

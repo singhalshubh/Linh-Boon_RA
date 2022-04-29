@@ -62,6 +62,9 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, unique_task_id_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, task_info_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, compute_task_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, exec_time_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, waiting_time_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::kv::command, rtt_time_total_),
   0,
   1,
   2,
@@ -70,10 +73,13 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   7,
   4,
   5,
+  11,
   8,
+  9,
+  10,
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, 14, sizeof(::kv::command)},
+  { 0, 17, sizeof(::kv::command)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
@@ -101,15 +107,17 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\014kvcomm.proto\022\002kv\"\306\001\n\007command\022\021\n\tcomm_t"
+      "\n\014kvcomm.proto\022\002kv\"\207\002\n\007command\022\021\n\tcomm_t"
       "ype\030\001 \002(\t\022\023\n\013sender_type\030\002 \001(\t\022\026\n\016sender"
       "_address\030\003 \001(\t\022\016\n\006job_id\030\004 \001(\005\022\025\n\runique"
       "_job_id\030\005 \001(\t\022\023\n\013data_center\030\006 \001(\005\022\026\n\016un"
       "ique_task_id\030\007 \001(\t\022\021\n\ttask_info\030\010 \001(\t\022\024\n"
-      "\014compute_task\030\t \001(\005"
+      "\014compute_task\030\t \001(\005\022\021\n\texec_time\030\n \001(\001\022\024"
+      "\n\014waiting_time\030\013 \001(\001\022\026\n\016rtt_time_total\030\014"
+      " \001(\001"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 219);
+      descriptor, 284);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "kvcomm.proto", &protobuf_RegisterTypes);
 }
@@ -141,6 +149,9 @@ const int command::kDataCenterFieldNumber;
 const int command::kUniqueTaskIdFieldNumber;
 const int command::kTaskInfoFieldNumber;
 const int command::kComputeTaskFieldNumber;
+const int command::kExecTimeFieldNumber;
+const int command::kWaitingTimeFieldNumber;
+const int command::kRttTimeTotalFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 command::command()
@@ -257,7 +268,11 @@ void command::Clear() {
         reinterpret_cast<char*>(&data_center_) -
         reinterpret_cast<char*>(&job_id_)) + sizeof(data_center_));
   }
-  compute_task_ = 0;
+  if (cached_has_bits & 3840u) {
+    ::memset(&exec_time_, 0, static_cast<size_t>(
+        reinterpret_cast<char*>(&compute_task_) -
+        reinterpret_cast<char*>(&exec_time_)) + sizeof(compute_task_));
+  }
   _has_bits_.Clear();
   _internal_metadata_.Clear();
 }
@@ -410,6 +425,48 @@ bool command::MergePartialFromCodedStream(
         break;
       }
 
+      // optional double exec_time = 10;
+      case 10: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(81u /* 81 & 0xFF */)) {
+          set_has_exec_time();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &exec_time_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional double waiting_time = 11;
+      case 11: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(89u /* 89 & 0xFF */)) {
+          set_has_waiting_time();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &waiting_time_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // optional double rtt_time_total = 12;
+      case 12: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(97u /* 97 & 0xFF */)) {
+          set_has_rtt_time_total();
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &rtt_time_total_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
       default: {
       handle_unusual:
         if (tag == 0) {
@@ -508,8 +565,23 @@ void command::SerializeWithCachedSizes(
   }
 
   // optional int32 compute_task = 9;
-  if (cached_has_bits & 0x00000100u) {
+  if (cached_has_bits & 0x00000800u) {
     ::google::protobuf::internal::WireFormatLite::WriteInt32(9, this->compute_task(), output);
+  }
+
+  // optional double exec_time = 10;
+  if (cached_has_bits & 0x00000100u) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(10, this->exec_time(), output);
+  }
+
+  // optional double waiting_time = 11;
+  if (cached_has_bits & 0x00000200u) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(11, this->waiting_time(), output);
+  }
+
+  // optional double rtt_time_total = 12;
+  if (cached_has_bits & 0x00000400u) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(12, this->rtt_time_total(), output);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -604,8 +676,23 @@ void command::SerializeWithCachedSizes(
   }
 
   // optional int32 compute_task = 9;
-  if (cached_has_bits & 0x00000100u) {
+  if (cached_has_bits & 0x00000800u) {
     target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(9, this->compute_task(), target);
+  }
+
+  // optional double exec_time = 10;
+  if (cached_has_bits & 0x00000100u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(10, this->exec_time(), target);
+  }
+
+  // optional double waiting_time = 11;
+  if (cached_has_bits & 0x00000200u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(11, this->waiting_time(), target);
+  }
+
+  // optional double rtt_time_total = 12;
+  if (cached_has_bits & 0x00000400u) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(12, this->rtt_time_total(), target);
   }
 
   if (_internal_metadata_.have_unknown_fields()) {
@@ -682,13 +769,30 @@ size_t command::ByteSizeLong() const {
     }
 
   }
-  // optional int32 compute_task = 9;
-  if (has_compute_task()) {
-    total_size += 1 +
-      ::google::protobuf::internal::WireFormatLite::Int32Size(
-        this->compute_task());
-  }
+  if (_has_bits_[8 / 32] & 3840u) {
+    // optional double exec_time = 10;
+    if (has_exec_time()) {
+      total_size += 1 + 8;
+    }
 
+    // optional double waiting_time = 11;
+    if (has_waiting_time()) {
+      total_size += 1 + 8;
+    }
+
+    // optional double rtt_time_total = 12;
+    if (has_rtt_time_total()) {
+      total_size += 1 + 8;
+    }
+
+    // optional int32 compute_task = 9;
+    if (has_compute_task()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->compute_task());
+    }
+
+  }
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
@@ -750,8 +854,20 @@ void command::MergeFrom(const command& from) {
     }
     _has_bits_[0] |= cached_has_bits;
   }
-  if (cached_has_bits & 0x00000100u) {
-    set_compute_task(from.compute_task());
+  if (cached_has_bits & 3840u) {
+    if (cached_has_bits & 0x00000100u) {
+      exec_time_ = from.exec_time_;
+    }
+    if (cached_has_bits & 0x00000200u) {
+      waiting_time_ = from.waiting_time_;
+    }
+    if (cached_has_bits & 0x00000400u) {
+      rtt_time_total_ = from.rtt_time_total_;
+    }
+    if (cached_has_bits & 0x00000800u) {
+      compute_task_ = from.compute_task_;
+    }
+    _has_bits_[0] |= cached_has_bits;
   }
 }
 
@@ -794,6 +910,9 @@ void command::InternalSwap(command* other) {
     GetArenaNoVirtual());
   swap(job_id_, other->job_id_);
   swap(data_center_, other->data_center_);
+  swap(exec_time_, other->exec_time_);
+  swap(waiting_time_, other->waiting_time_);
+  swap(rtt_time_total_, other->rtt_time_total_);
   swap(compute_task_, other->compute_task_);
   swap(_has_bits_[0], other->_has_bits_[0]);
   _internal_metadata_.Swap(&other->_internal_metadata_);

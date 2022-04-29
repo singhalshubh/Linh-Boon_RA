@@ -12,4 +12,7 @@ message command {
   optional string unique_task_id = 7;
   optional string task_info = 8;
   optional int32 compute_task = 9;
+  optional double exec_time = 10;
+  optional double waiting_time = 11;
+  optional double rtt_time_total = 12;
 }
